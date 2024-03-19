@@ -1,4 +1,4 @@
-module erp-base
+module github.com/chengtianbao/go-rpc
 
 go 1.20
 

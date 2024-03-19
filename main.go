@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"erp-base/center"
-	"erp-base/node"
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/chengtianbao/go-rpc/center"
+	"github.com/chengtianbao/go-rpc/node"
 )
 
 var ctx = context.Background()
