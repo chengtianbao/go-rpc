@@ -272,6 +272,7 @@ func (nd *Node) reConn() error {
 
 	for {
 		conn, err := NewAuthedConn(nd.name, nd.network, nd.address)
+		log.Printf("NewAuthedConn err:%s\n", err)
 		if err != nil {
 			// 失败后2秒重试
 			time.Sleep(2 * time.Second)
@@ -288,7 +289,7 @@ func (nd *Node) reConn() error {
 }
 
 func NewAuthedConn(name, network, address string) (net.Conn, error) {
-
+	log.Println("NewAuthedConn")
 	conn, err := net.Dial(network, address)
 	if err != nil {
 		return nil, err
@@ -334,6 +335,7 @@ func NewAuthedConn(name, network, address string) (net.Conn, error) {
 
 func NewNode(name, network, address string) (*Node, error) {
 	conn, err := NewAuthedConn(name, network, address)
+	log.Printf("NewAuthedConn err:%s\n", err)
 	if err != nil {
 		return nil, err
 	}
