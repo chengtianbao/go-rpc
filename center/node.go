@@ -21,8 +21,10 @@ func (m *NodeManager) HandleNewConn(conn net.Conn, name string) {
 	// 判断客户端是否存在
 	c, ok := m.List[name]
 	if ok {
+		log.Println("旧链接 客户端已存在")
 		c.ReInit(conn)
 	} else {
+		log.Println("新链接 客户端不存在")
 		c := &Node{
 			name:               name,
 			createAt:           time.Now(),
@@ -93,6 +95,7 @@ func (c *Node) close() {
 	if c.IsClosed() {
 		return
 	}
+
 	atomic.StoreInt32(&c.closeFlag, 1)
 	c.conn.Close()
 	c.closeReceiveChan <- struct{}{}
@@ -102,6 +105,7 @@ func (c *Node) close() {
 }
 
 func (c *Node) readLoop() {
+	defer log.Println("center readLoop closed")
 
 	var buf []byte = make([]byte, msgBufferSize)
 
@@ -115,7 +119,6 @@ func (c *Node) readLoop() {
 		n, err := c.conn.Read(buf)
 		if err != nil {
 			c.close()
-			return
 		} else {
 			var msg Message
 
@@ -131,6 +134,8 @@ func (c *Node) readLoop() {
 }
 
 func (c *Node) writeLoop() {
+	defer log.Println("center writeLoop closed")
+
 	for {
 		select {
 		case <-c.closeWriteChan:
@@ -145,6 +150,7 @@ func (c *Node) writeLoop() {
 }
 
 func (c *Node) handleLoop() {
+	defer log.Println("center handleLoop closed")
 	for {
 		select {
 		case <-c.closeHandleChan:

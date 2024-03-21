@@ -52,7 +52,6 @@ func (n *Node) close() {
 	time.AfterFunc(2*time.Second, func() {
 		n.reConn()
 	})
-
 }
 
 func (n *Node) SendMessage(msg MessageOut) MessageIn {
@@ -266,6 +265,7 @@ func (nd *Node) init() error {
 }
 
 func (nd *Node) reConn() error {
+	log.Println("reConn")
 	if !nd.IsClosed() {
 		return errors.New("node is not closed")
 	}
@@ -279,7 +279,7 @@ func (nd *Node) reConn() error {
 			continue
 		}
 
-		atomic.StoreInt32(&nd.closeFlag, 1)
+		atomic.StoreInt32(&nd.closeFlag, 0)
 		nd.conn = conn
 		go nd.readLoop()
 		break
@@ -350,7 +350,7 @@ func NewNode(name, network, address string) (*Node, error) {
 		messageHandlers:  make(map[string]MessageHandler),
 		serviceHandlers:  make(map[string]ServiceHandler),
 		single:           make(chan struct{}, 1),
-		closeReceiveChan: make(chan struct{}),
+		closeReceiveChan: make(chan struct{}, 1),
 	}
 
 	// 发送认证消息
